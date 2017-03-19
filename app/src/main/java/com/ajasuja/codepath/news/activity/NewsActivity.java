@@ -149,9 +149,9 @@ public class NewsActivity extends AppCompatActivity implements SettingsDialogFra
         if (settings == null) {
             settings = Settings.getInstance();
         }
-        if (query == null) {
-            query = formatQuery("donald trump");
-        }
+//        if (query == null) {
+//            query = formatQuery("donald trump");
+//        }
         fetchArticles(0);
     }
 

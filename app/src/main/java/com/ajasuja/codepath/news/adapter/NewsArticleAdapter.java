@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.ajasuja.codepath.news.R;
 import com.ajasuja.codepath.news.model.NewsArticle;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -51,7 +51,8 @@ public class NewsArticleAdapter extends ArrayAdapter<NewsArticle> {
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        Picasso.with(getContext()).load(newsArticle.getThumbNailImageUrl()).into(viewHolder.imageViewThumbNail);
+        Glide.with(getContext()).load(newsArticle.getThumbNailImageUrl()).into(viewHolder.imageViewThumbNail);
+//        Picasso.with(getContext()).load(newsArticle.getThumbNailImageUrl()).into(viewHolder.imageViewThumbNail);
         viewHolder.textViewHeadline.setText(newsArticle.getHeadline());
         return convertView;
     }

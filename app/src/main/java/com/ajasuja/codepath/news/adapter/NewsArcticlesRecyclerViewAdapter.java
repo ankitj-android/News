@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.ajasuja.codepath.news.R;
 import com.ajasuja.codepath.news.model.NewsArticle;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -47,7 +47,8 @@ public class NewsArcticlesRecyclerViewAdapter extends RecyclerView.Adapter<NewsA
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
         NewsArticle newsArticle = newsArticles.get(position);
-        Picasso.with(context).load(newsArticle.getThumbNailImageUrl()).into(viewHolder.imageViewThumbNail);
+        Glide.with(context).load(newsArticle.getThumbNailImageUrl()).into(viewHolder.imageViewThumbNail);
+//        Picasso.with(context).load(newsArticle.getThumbNailImageUrl()).into(viewHolder.imageViewThumbNail);
         viewHolder.textViewHeadline.setText(newsArticle.getHeadline());
     }
 

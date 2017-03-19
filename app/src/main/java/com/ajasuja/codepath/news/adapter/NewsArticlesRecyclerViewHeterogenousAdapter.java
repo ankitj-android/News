@@ -10,7 +10,7 @@ import com.ajasuja.codepath.news.R;
 import com.ajasuja.codepath.news.model.NewsArticle;
 import com.ajasuja.codepath.news.view.NewsArticleRecyclerViewHolderWithoutImage;
 import com.ajasuja.codepath.news.view.NewsArticleRecylerViewHolderWithImage;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -54,9 +54,12 @@ public class NewsArticlesRecyclerViewHeterogenousAdapter extends RecyclerView.Ad
         switch (viewHolder.getItemViewType()) {
             case WITH_IMAGE:
                 NewsArticleRecylerViewHolderWithImage newsArticleRecylerViewHolderWithImage = (NewsArticleRecylerViewHolderWithImage) viewHolder;
-                Picasso.with(context)
+                Glide.with(context)
                         .load(newsArticle.getThumbNailImageUrl())
                         .into(newsArticleRecylerViewHolderWithImage.getImageViewThumbNail());
+//                Picasso.with(context)
+//                        .load(newsArticle.getThumbNailImageUrl())
+//                        .into(newsArticleRecylerViewHolderWithImage.getImageViewThumbNail());
                 newsArticleRecylerViewHolderWithImage.getTextViewHeadline().setText(newsArticle.getHeadline());
                 break;
             case WITHOUT_IMAGE:

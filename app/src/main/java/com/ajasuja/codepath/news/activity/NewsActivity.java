@@ -1,7 +1,6 @@
 package com.ajasuja.codepath.news.activity;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -15,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
@@ -40,12 +40,13 @@ import cz.msebera.android.httpclient.Header;
 import static android.support.v7.widget.SearchView.OnQueryTextListener;
 import static butterknife.ButterKnife.bind;
 import static com.ajasuja.codepath.news.model.NewsArticle.fromJsonArray;
-import static org.parceler.Parcels.wrap;
 
 public class NewsActivity extends AppCompatActivity implements SettingsDialogFragment.SettingsListener{
 
+    @BindView(R.id.webViewNewsDetails) WebView webViewNewsDetails;
     @BindView(R.id.toolBar) Toolbar toolbar;
     @BindView(R.id.gridViewNewsArticles) GridView gridViewNews;
+
 
     private NewsArticleAdapter newsArticleAdapter;
 
@@ -54,6 +55,8 @@ public class NewsActivity extends AppCompatActivity implements SettingsDialogFra
     private String query;
     private ConnectivityManager connectivityManager;
     private View parentView;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,14 +80,25 @@ public class NewsActivity extends AppCompatActivity implements SettingsDialogFra
             query = formatQuery("donald trump");
         }
         fetchArticles();
+//        gridViewNews.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                NewsArticle newsArticle = newsArticles.get(i);
+//                Log.d("FLOW", newsArticle.toString());
+//                Intent news2NewsDetailsIntent = new Intent(NewsActivity.this, NewsArticleDetailsActivity.class);
+//                news2NewsDetailsIntent.putExtra("newsArticle", wrap(newsArticle));
+//                startActivity(news2NewsDetailsIntent);
+//            }
+//        });
         gridViewNews.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 NewsArticle newsArticle = newsArticles.get(i);
                 Log.d("FLOW", newsArticle.toString());
-                Intent news2NewsDetailsIntent = new Intent(NewsActivity.this, NewsArticleDetailsActivity.class);
-                news2NewsDetailsIntent.putExtra("newsArticle", wrap(newsArticle));
-                startActivity(news2NewsDetailsIntent);
+                webViewNewsDetails.getSettings().setLoadsImagesAutomatically(true);
+                webViewNewsDetails.getSettings().setJavaScriptEnabled(true);
+                webViewNewsDetails.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+                webViewNewsDetails.loadUrl(newsArticle.getWebUrl());
             }
         });
     }

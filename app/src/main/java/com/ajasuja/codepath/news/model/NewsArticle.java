@@ -13,6 +13,7 @@ import java.util.List;
  */
 @Parcel
 public class NewsArticle {
+    String webUrl;
     String thumbNailImageUrl;
     String headline;
 
@@ -21,11 +22,16 @@ public class NewsArticle {
     }
 
     public NewsArticle(JSONObject jsonObject) throws JSONException {
+        webUrl = jsonObject.getString("web_url");
         this.headline = jsonObject.getJSONObject("headline").getString("main");
         JSONArray multimediaObjects = jsonObject.getJSONArray("multimedia");
         if (multimediaObjects.length() > 0) {
             this.thumbNailImageUrl = multimediaObjects.getJSONObject(0).getString("url");
         }
+    }
+
+    public String getWebUrl() {
+        return webUrl;
     }
 
     public String getHeadline() {

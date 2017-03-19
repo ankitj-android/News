@@ -21,7 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.ajasuja.codepath.news.R;
-import com.ajasuja.codepath.news.adapter.NewsArcticlesRecyclerViewAdapter;
+import com.ajasuja.codepath.news.adapter.NewsArticlesRecyclerViewHeterogenousAdapter;
 import com.ajasuja.codepath.news.decorate.ItemClickSupport;
 import com.ajasuja.codepath.news.decorate.SpacesItemDecoration;
 import com.ajasuja.codepath.news.fragment.SettingsDialogFragment;
@@ -56,7 +56,8 @@ public class NewsActivity extends AppCompatActivity implements SettingsDialogFra
 //    private NewsArticleAdapter newsArticleAdapter;
 
     @BindView(R.id.recyclerViewNewsArticles) RecyclerView recyclerViewNewsArticles;
-    private NewsArcticlesRecyclerViewAdapter newsArcticlesRecyclerViewAdapter;
+//    private NewsArcticlesRecyclerViewAdapter newsArcticlesRecyclerViewAdapter;
+    private NewsArticlesRecyclerViewHeterogenousAdapter newsArticlesRecyclerViewHeterogenousAdapter;
     private EndlessRecyclerViewScrollListener endlessRecyclerViewScrollListener;
 
     private List<NewsArticle> newsArticles;
@@ -103,8 +104,10 @@ public class NewsActivity extends AppCompatActivity implements SettingsDialogFra
         bind(this);
         setSupportActionBar(toolbar);
 
-        newsArcticlesRecyclerViewAdapter = new NewsArcticlesRecyclerViewAdapter(this, newsArticles);
-        recyclerViewNewsArticles.setAdapter(newsArcticlesRecyclerViewAdapter);
+//        newsArcticlesRecyclerViewAdapter = new NewsArcticlesRecyclerViewAdapter(this, newsArticles);
+//        recyclerViewNewsArticles.setAdapter(newsArcticlesRecyclerViewAdapter);
+        newsArticlesRecyclerViewHeterogenousAdapter = new NewsArticlesRecyclerViewHeterogenousAdapter(this, newsArticles);
+        recyclerViewNewsArticles.setAdapter(newsArticlesRecyclerViewHeterogenousAdapter);
 //        recyclerViewNewsArticles.setLayoutManager(new LinearLayoutManager(this));
         StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, OrientationHelper.VERTICAL);
         recyclerViewNewsArticles.setLayoutManager(staggeredGridLayoutManager);
@@ -220,11 +223,13 @@ public class NewsActivity extends AppCompatActivity implements SettingsDialogFra
                     if (page == 0) {
                         newsArticles.clear();
                         endlessRecyclerViewScrollListener.resetState();
-                        newsArcticlesRecyclerViewAdapter.notifyDataSetChanged();
+                        newsArticlesRecyclerViewHeterogenousAdapter.notifyDataSetChanged();
+//                        newsArcticlesRecyclerViewAdapter.notifyDataSetChanged();
                     }
                     newsArticles.addAll(fromJsonArray(response.getJSONObject("response").getJSONArray("docs")));
 //                    newsArticleAdapter.notifyDataSetChanged();
-                    newsArcticlesRecyclerViewAdapter.notifyDataSetChanged();
+//                    newsArcticlesRecyclerViewAdapter.notifyDataSetChanged();
+                    newsArticlesRecyclerViewHeterogenousAdapter.notifyDataSetChanged();
                     Log.d("[DEBUG]", newsArticles.toString());
                 } catch (JSONException e) {
                     e.printStackTrace();

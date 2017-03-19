@@ -42,9 +42,11 @@ public class NewsArticle {
     public String getThumbNailImageUrl() {
         if (thumbNailImageUrl != null) {
             return "http://www.nytimes.com/" + thumbNailImageUrl;
-        } else {
-            return "http://www.nytimes.com/" + "images/2012/01/01/us/01ground-span/01ground-span-thumbStandard.jpg";
         }
+//        else {
+//            return "http://www.nytimes.com/" + "images/2012/01/01/us/01ground-span/01ground-span-thumbStandard.jpg";
+//        }
+        return null;
     }
 
     public static List<NewsArticle> fromJsonArray(JSONArray articlesJsonArray) throws JSONException {

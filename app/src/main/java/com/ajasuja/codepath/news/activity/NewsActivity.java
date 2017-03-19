@@ -9,20 +9,23 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.OrientationHelper;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.GridView;
 
 import com.ajasuja.codepath.news.R;
-import com.ajasuja.codepath.news.adapter.NewsArticleAdapter;
+import com.ajasuja.codepath.news.adapter.NewsArcticlesRecyclerViewAdapter;
+import com.ajasuja.codepath.news.decorate.ItemClickSupport;
+import com.ajasuja.codepath.news.decorate.SpacesItemDecoration;
 import com.ajasuja.codepath.news.fragment.SettingsDialogFragment;
-import com.ajasuja.codepath.news.listener.EndlessScrollListener;
+import com.ajasuja.codepath.news.listener.EndlessRecyclerViewScrollListener;
 import com.ajasuja.codepath.news.model.NewsArticle;
 import com.ajasuja.codepath.news.model.Settings;
 import com.ajasuja.codepath.news.util.NetworkUtil;
@@ -38,6 +41,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import cz.msebera.android.httpclient.Header;
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
 import static android.support.v7.widget.SearchView.OnQueryTextListener;
 import static butterknife.ButterKnife.bind;
@@ -47,10 +51,13 @@ import static org.parceler.Parcels.wrap;
 public class NewsActivity extends AppCompatActivity implements SettingsDialogFragment.SettingsListener{
 
     @BindView(R.id.toolBar) Toolbar toolbar;
-    @BindView(R.id.gridViewNewsArticles) GridView gridViewNews;
 
+//    @BindView(R.id.gridViewNewsArticles) GridView gridViewNews;
+//    private NewsArticleAdapter newsArticleAdapter;
 
-    private NewsArticleAdapter newsArticleAdapter;
+    @BindView(R.id.recyclerViewNewsArticles) RecyclerView recyclerViewNewsArticles;
+    private NewsArcticlesRecyclerViewAdapter newsArcticlesRecyclerViewAdapter;
+    private EndlessRecyclerViewScrollListener endlessRecyclerViewScrollListener;
 
     private List<NewsArticle> newsArticles;
     private Settings settings;
@@ -64,19 +71,78 @@ public class NewsActivity extends AppCompatActivity implements SettingsDialogFra
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_news);
+        newsArticles = new ArrayList<>();
+
+        /* -------- grid views start ---------- */
+//        setContentView(R.layout.activity_news);
+//        newsArticleAdapter = new NewsArticleAdapter(this, newsArticles);
+//        gridViewNews.setAdapter(newsArticleAdapter);
+//        gridViewNews.setOnScrollListener(new EndlessScrollListener() {
+//            @Override
+//            public boolean onLoadMore(int page, int totalItemsCount) {
+//                fetchArticles(page);
+//                return true;
+//            }
+//        });
+//        gridViewNews.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                NewsArticle newsArticle = newsArticles.get(i);
+//                Log.d("FLOW", newsArticle.toString());
+//                Intent news2NewsDetailsIntent = new Intent(NewsActivity.this, NewsArticleDetailsActivity.class);
+//                news2NewsDetailsIntent.putExtra("newsArticle", wrap(newsArticle));
+//                startActivity(news2NewsDetailsIntent);
+//            }
+//        });
+
+        /* -------- grid views end ---------- */
+
+        /* -------- recycle views start ---------- */
+        setContentView(R.layout.activity_news_recycle_views);
+        parentView = findViewById(R.id.layoutNewsRecycles);
+        bind(this);
+        setSupportActionBar(toolbar);
+
+        newsArcticlesRecyclerViewAdapter = new NewsArcticlesRecyclerViewAdapter(this, newsArticles);
+        recyclerViewNewsArticles.setAdapter(newsArcticlesRecyclerViewAdapter);
+//        recyclerViewNewsArticles.setLayoutManager(new LinearLayoutManager(this));
+        StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, OrientationHelper.VERTICAL);
+        recyclerViewNewsArticles.setLayoutManager(staggeredGridLayoutManager);
+        recyclerViewNewsArticles.setItemAnimator(new SlideInUpAnimator());
+//        RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        SpacesItemDecoration spacesItemDecoration = new SpacesItemDecoration(16);
+        recyclerViewNewsArticles.addItemDecoration(spacesItemDecoration);
+        endlessRecyclerViewScrollListener = new EndlessRecyclerViewScrollListener(staggeredGridLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                fetchArticles(page);
+            }
+        };
+        recyclerViewNewsArticles.addOnScrollListener(endlessRecyclerViewScrollListener);
+
+
+        ItemClickSupport.addTo(recyclerViewNewsArticles).setOnItemClickListener(
+                new ItemClickSupport.OnItemClickListener() {
+                    @Override
+                    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                        NewsArticle newsArticle = newsArticles.get(position);
+                        Log.d("FLOW", newsArticle.toString());
+                        Intent news2NewsDetailsIntent = new Intent(NewsActivity.this, NewsArticleDetailsActivity.class);
+                        news2NewsDetailsIntent.putExtra("newsArticle", wrap(newsArticle));
+                        startActivity(news2NewsDetailsIntent);
+                    }
+                }
+        );
+        /* -------- recycle views end ---------- */
+
 
         parentView = findViewById(R.id.activity_news);
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         if (!NetworkUtil.canCallService(connectivityManager)) {
             Snackbar.make(parentView, "No Network", Snackbar.LENGTH_LONG).show();
         }
-        bind(this);
-        setSupportActionBar(toolbar);
 
-        newsArticles = new ArrayList<>();
-        newsArticleAdapter = new NewsArticleAdapter(this, newsArticles);
-        gridViewNews.setAdapter(newsArticleAdapter);
+
         if (settings == null) {
             settings = Settings.getInstance();
         }
@@ -84,36 +150,7 @@ public class NewsActivity extends AppCompatActivity implements SettingsDialogFra
             query = formatQuery("donald trump");
         }
         fetchArticles(0);
-        gridViewNews.setOnScrollListener(new EndlessScrollListener() {
-            @Override
-            public boolean onLoadMore(int page, int totalItemsCount) {
-                fetchArticles(page);
-                return true;
-            }
-        });
-        gridViewNews.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                NewsArticle newsArticle = newsArticles.get(i);
-                Log.d("FLOW", newsArticle.toString());
-                Intent news2NewsDetailsIntent = new Intent(NewsActivity.this, NewsArticleDetailsActivity.class);
-                news2NewsDetailsIntent.putExtra("newsArticle", wrap(newsArticle));
-                startActivity(news2NewsDetailsIntent);
-            }
-        });
-//        gridViewNews.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                NewsArticle newsArticle = newsArticles.get(i);
-//                Log.d("FLOW", newsArticle.toString());
-//                webViewNewsDetails.getSettings().setLoadsImagesAutomatically(true);
-//                webViewNewsDetails.getSettings().setJavaScriptEnabled(true);
-//                webViewNewsDetails.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
-//                webViewNewsDetails.loadUrl(newsArticle.getWebUrl());
-//            }
-//        });
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -182,9 +219,12 @@ public class NewsActivity extends AppCompatActivity implements SettingsDialogFra
                 try {
                     if (page == 0) {
                         newsArticles.clear();
+                        endlessRecyclerViewScrollListener.resetState();
+                        newsArcticlesRecyclerViewAdapter.notifyDataSetChanged();
                     }
                     newsArticles.addAll(fromJsonArray(response.getJSONObject("response").getJSONArray("docs")));
-                    newsArticleAdapter.notifyDataSetChanged();
+//                    newsArticleAdapter.notifyDataSetChanged();
+                    newsArcticlesRecyclerViewAdapter.notifyDataSetChanged();
                     Log.d("[DEBUG]", newsArticles.toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -197,7 +237,7 @@ public class NewsActivity extends AppCompatActivity implements SettingsDialogFra
                 Log.d("debug", errorMessage);
                 if (statusCode == 429) {
                     try {
-                        Snackbar.make(parentView, "API Rate Limiting", Snackbar.LENGTH_SHORT).show();
+//                        Snackbar.make(parentView, "API Rate Limiting", Snackbar.LENGTH_SHORT).show();
                         Thread.sleep(1000);
                         fetchArticles(page);
                     } catch (InterruptedException e) {

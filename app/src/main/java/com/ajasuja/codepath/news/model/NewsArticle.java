@@ -13,6 +13,7 @@ import java.util.List;
  */
 @Parcel
 public class NewsArticle {
+
     String webUrl;
     String thumbNailImageUrl;
     String headline;

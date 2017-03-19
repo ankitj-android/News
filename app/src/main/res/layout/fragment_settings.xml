@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textViewBeginDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="19dp"
+        android:layout_marginStart="19dp"
+        android:text="Begin Date"
+        android:layout_marginTop="51dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:id="@+id/textViewSortOrder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="13dp"
+        android:text="Sort Order"
+        android:layout_below="@+id/editTextBeginDate"
+        android:layout_alignRight="@+id/textViewBeginDate"
+        android:layout_alignEnd="@+id/textViewBeginDate" />
+
+    <TextView
+        android:id="@+id/textViewNewsDesk"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="News Desks"
+        android:layout_marginTop="26dp"
+        android:layout_below="@+id/textViewSortOrder"
+        android:layout_alignLeft="@+id/textViewSortOrder"
+        android:layout_alignStart="@+id/textViewSortOrder" />
+
+    <EditText
+        android:id="@+id/editTextBeginDate"
+        android:editable="false"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/textViewBeginDate"
+        android:layout_alignBottom="@+id/textViewBeginDate"
+        android:layout_marginLeft="26dp"
+        android:layout_marginStart="26dp"
+        android:layout_toRightOf="@+id/textViewBeginDate"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="01/01/01" />
+
+    <Spinner
+        android:id="@+id/spinnerSortOrder"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/editTextBeginDate"
+        android:layout_alignStart="@+id/editTextBeginDate"
+        android:layout_alignBottom="@+id/textViewSortOrder" />
+
+    <CheckBox
+        android:id="@+id/checkBoxArts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Arts"
+        android:layout_alignBaseline="@+id/textViewNewsDesk"
+        android:layout_alignBottom="@+id/textViewNewsDesk"
+        android:layout_alignLeft="@+id/spinnerSortOrder"
+        android:layout_alignStart="@+id/spinnerSortOrder" />
+
+    <CheckBox
+        android:id="@+id/checkBoxFashionStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fashion And Style"
+        android:layout_below="@+id/checkBoxArts"
+        android:layout_alignLeft="@+id/checkBoxArts"
+        android:layout_alignStart="@+id/checkBoxArts" />
+
+    <CheckBox
+        android:id="@+id/checkBoxSports"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sports"
+        android:layout_below="@+id/checkBoxFashionStyle"
+        android:layout_alignLeft="@+id/checkBoxFashionStyle"
+        android:layout_alignStart="@+id/checkBoxFashionStyle" />
+
+    <Button
+        android:id="@+id/buttonSave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:layout_alignBaseline="@+id/buttonCancel"
+        android:layout_alignBottom="@+id/buttonCancel"
+        android:layout_toRightOf="@+id/buttonCancel"
+        android:layout_toEndOf="@+id/buttonCancel" />
+
+    <Button
+        android:id="@+id/buttonCancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cancel"
+        android:layout_marginTop="18dp"
+        android:layout_below="@+id/checkBoxSports"
+        android:layout_toLeftOf="@+id/checkBoxSports"
+        android:layout_toStartOf="@+id/checkBoxSports" />
+
+    <ImageButton
+        android:id="@+id/imageButtonCalendar"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignEnd="@+id/spinnerSortOrder"
+        android:layout_alignRight="@+id/spinnerSortOrder"
+        android:layout_alignTop="@+id/editTextBeginDate"
+        app:srcCompat="@mipmap/ic_launcher" />
+</RelativeLayout>

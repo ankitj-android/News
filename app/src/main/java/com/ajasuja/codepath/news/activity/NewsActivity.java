@@ -1,6 +1,7 @@
 package com.ajasuja.codepath.news.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,7 +16,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
@@ -42,10 +42,10 @@ import cz.msebera.android.httpclient.Header;
 import static android.support.v7.widget.SearchView.OnQueryTextListener;
 import static butterknife.ButterKnife.bind;
 import static com.ajasuja.codepath.news.model.NewsArticle.fromJsonArray;
+import static org.parceler.Parcels.wrap;
 
 public class NewsActivity extends AppCompatActivity implements SettingsDialogFragment.SettingsListener{
 
-    @BindView(R.id.webViewNewsDetails) WebView webViewNewsDetails;
     @BindView(R.id.toolBar) Toolbar toolbar;
     @BindView(R.id.gridViewNewsArticles) GridView gridViewNews;
 
@@ -68,8 +68,8 @@ public class NewsActivity extends AppCompatActivity implements SettingsDialogFra
 
         parentView = findViewById(R.id.activity_news);
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (NetworkUtil.canCallService(connectivityManager)) {
-            Snackbar.make(parentView, "No Network", Snackbar.LENGTH_SHORT).show();
+        if (!NetworkUtil.canCallService(connectivityManager)) {
+            Snackbar.make(parentView, "No Network", Snackbar.LENGTH_LONG).show();
         }
         bind(this);
         setSupportActionBar(toolbar);
@@ -91,27 +91,27 @@ public class NewsActivity extends AppCompatActivity implements SettingsDialogFra
                 return true;
             }
         });
-//        gridViewNews.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                NewsArticle newsArticle = newsArticles.get(i);
-//                Log.d("FLOW", newsArticle.toString());
-//                Intent news2NewsDetailsIntent = new Intent(NewsActivity.this, NewsArticleDetailsActivity.class);
-//                news2NewsDetailsIntent.putExtra("newsArticle", wrap(newsArticle));
-//                startActivity(news2NewsDetailsIntent);
-//            }
-//        });
         gridViewNews.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 NewsArticle newsArticle = newsArticles.get(i);
                 Log.d("FLOW", newsArticle.toString());
-                webViewNewsDetails.getSettings().setLoadsImagesAutomatically(true);
-                webViewNewsDetails.getSettings().setJavaScriptEnabled(true);
-                webViewNewsDetails.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
-                webViewNewsDetails.loadUrl(newsArticle.getWebUrl());
+                Intent news2NewsDetailsIntent = new Intent(NewsActivity.this, NewsArticleDetailsActivity.class);
+                news2NewsDetailsIntent.putExtra("newsArticle", wrap(newsArticle));
+                startActivity(news2NewsDetailsIntent);
             }
         });
+//        gridViewNews.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                NewsArticle newsArticle = newsArticles.get(i);
+//                Log.d("FLOW", newsArticle.toString());
+//                webViewNewsDetails.getSettings().setLoadsImagesAutomatically(true);
+//                webViewNewsDetails.getSettings().setJavaScriptEnabled(true);
+//                webViewNewsDetails.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+//                webViewNewsDetails.loadUrl(newsArticle.getWebUrl());
+//            }
+//        });
     }
 
 
@@ -170,6 +170,10 @@ public class NewsActivity extends AppCompatActivity implements SettingsDialogFra
         final AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
         final String nyTimesUrl = buildNyTimesUrl(page, settings);
         Log.d("debug", nyTimesUrl);
+        if (!NetworkUtil.canCallService(connectivityManager)) {
+            Snackbar.make(parentView, "No Network", Snackbar.LENGTH_LONG).show();
+            return;
+        }
         asyncHttpClient.get(nyTimesUrl, new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {

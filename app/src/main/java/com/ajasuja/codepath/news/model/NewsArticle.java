@@ -22,6 +22,7 @@ public class NewsArticle {
     String webUrl;
     String thumbNailImageUrl;
     String headline;
+    String snippet;
 
     public NewsArticle() {
         // for parceler
@@ -34,6 +35,7 @@ public class NewsArticle {
         if (multimediaObjects.length() > 0) {
             this.thumbNailImageUrl = multimediaObjects.getJSONObject(0).getString("url");
         }
+        snippet = jsonObject.getString("snippet");
     }
 
     public NewsArticle(JsonObject jsonObject) {
@@ -43,6 +45,7 @@ public class NewsArticle {
         if (multimediaObjects.size() > 0) {
             this.thumbNailImageUrl = multimediaObjects.get(0).getAsJsonObject().get("url").getAsString();
         }
+        snippet = jsonObject.get("snippet").getAsString();
     }
 
     public String getWebUrl() {
@@ -61,6 +64,10 @@ public class NewsArticle {
 //            return "http://www.nytimes.com/" + "images/2012/01/01/us/01ground-span/01ground-span-thumbStandard.jpg";
 //        }
         return null;
+    }
+
+    public String getSnippet() {
+        return snippet;
     }
 
     public static List<NewsArticle> fromJsonArray(JSONArray articlesJsonArray) throws JSONException {

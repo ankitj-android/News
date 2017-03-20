@@ -36,6 +36,7 @@ public class NewsArticleDetailsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        setTitle("Article Details");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_details);
         //view

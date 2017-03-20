@@ -66,6 +66,7 @@ public class NewsArticlesRecyclerViewHeterogenousAdapter extends RecyclerView.Ad
             default:
                 NewsArticleRecyclerViewHolderWithoutImage newsArticleRecyclerViewHolderWithoutImage = (NewsArticleRecyclerViewHolderWithoutImage) viewHolder;
                 newsArticleRecyclerViewHolderWithoutImage.getTextViewHeadline().setText(newsArticle.getHeadline());
+                newsArticleRecyclerViewHolderWithoutImage.getTextViewSnippet().setText(newsArticle.getSnippet());
         }
     }
 

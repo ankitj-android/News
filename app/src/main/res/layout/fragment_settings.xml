@@ -1,44 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/darker_gray"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/textViewBeginDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         android:layout_marginLeft="19dp"
         android:layout_marginStart="19dp"
-        android:text="Begin Date"
         android:layout_marginTop="51dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:text="Begin Date" />
 
     <TextView
         android:id="@+id/textViewSortOrder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="13dp"
-        android:text="Sort Order"
-        android:layout_below="@+id/editTextBeginDate"
+        android:layout_alignEnd="@+id/textViewBeginDate"
         android:layout_alignRight="@+id/textViewBeginDate"
-        android:layout_alignEnd="@+id/textViewBeginDate" />
+        android:layout_below="@+id/editTextBeginDate"
+        android:layout_marginTop="13dp"
+        android:text="Sort Order" />
 
     <TextView
         android:id="@+id/textViewNewsDesk"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="News Desks"
-        android:layout_marginTop="26dp"
-        android:layout_below="@+id/textViewSortOrder"
         android:layout_alignLeft="@+id/textViewSortOrder"
-        android:layout_alignStart="@+id/textViewSortOrder" />
+        android:layout_alignStart="@+id/textViewSortOrder"
+        android:layout_below="@+id/textViewSortOrder"
+        android:layout_marginTop="26dp"
+        android:text="News Desks" />
 
     <EditText
         android:id="@+id/editTextBeginDate"
-        android:editable="false"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/textViewBeginDate"
@@ -46,6 +47,7 @@
         android:layout_marginLeft="26dp"
         android:layout_marginStart="26dp"
         android:layout_toRightOf="@+id/textViewBeginDate"
+        android:editable="false"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="01/01/01" />
@@ -54,57 +56,57 @@
         android:id="@+id/spinnerSortOrder"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/textViewSortOrder"
         android:layout_alignLeft="@+id/editTextBeginDate"
-        android:layout_alignStart="@+id/editTextBeginDate"
-        android:layout_alignBottom="@+id/textViewSortOrder" />
+        android:layout_alignStart="@+id/editTextBeginDate" />
 
     <CheckBox
         android:id="@+id/checkBoxArts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Arts"
         android:layout_alignBaseline="@+id/textViewNewsDesk"
         android:layout_alignBottom="@+id/textViewNewsDesk"
         android:layout_alignLeft="@+id/spinnerSortOrder"
-        android:layout_alignStart="@+id/spinnerSortOrder" />
+        android:layout_alignStart="@+id/spinnerSortOrder"
+        android:text="Arts" />
 
     <CheckBox
         android:id="@+id/checkBoxFashionStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Fashion And Style"
-        android:layout_below="@+id/checkBoxArts"
         android:layout_alignLeft="@+id/checkBoxArts"
-        android:layout_alignStart="@+id/checkBoxArts" />
+        android:layout_alignStart="@+id/checkBoxArts"
+        android:layout_below="@+id/checkBoxArts"
+        android:text="Fashion And Style" />
 
     <CheckBox
         android:id="@+id/checkBoxSports"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sports"
-        android:layout_below="@+id/checkBoxFashionStyle"
         android:layout_alignLeft="@+id/checkBoxFashionStyle"
-        android:layout_alignStart="@+id/checkBoxFashionStyle" />
+        android:layout_alignStart="@+id/checkBoxFashionStyle"
+        android:layout_below="@+id/checkBoxFashionStyle"
+        android:text="Sports" />
 
     <Button
         android:id="@+id/buttonSave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Save"
         android:layout_alignBaseline="@+id/buttonCancel"
         android:layout_alignBottom="@+id/buttonCancel"
+        android:layout_toEndOf="@+id/buttonCancel"
         android:layout_toRightOf="@+id/buttonCancel"
-        android:layout_toEndOf="@+id/buttonCancel" />
+        android:text="Save" />
 
     <Button
         android:id="@+id/buttonCancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Cancel"
-        android:layout_marginTop="18dp"
         android:layout_below="@+id/checkBoxSports"
+        android:layout_marginTop="18dp"
         android:layout_toLeftOf="@+id/checkBoxSports"
-        android:layout_toStartOf="@+id/checkBoxSports" />
+        android:layout_toStartOf="@+id/checkBoxSports"
+        android:text="Cancel" />
 
     <ImageButton
         android:id="@+id/imageButtonCalendar"
@@ -113,5 +115,5 @@
         android:layout_alignEnd="@+id/spinnerSortOrder"
         android:layout_alignRight="@+id/spinnerSortOrder"
         android:layout_alignTop="@+id/editTextBeginDate"
-        app:srcCompat="@mipmap/ic_launcher" />
+        app:srcCompat="@mipmap/calendar" />
 </RelativeLayout>

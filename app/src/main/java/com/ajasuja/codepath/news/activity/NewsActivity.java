@@ -83,6 +83,7 @@ public class NewsActivity extends AppCompatActivity implements SettingsDialogFra
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTitle("Articles");
         super.onCreate(savedInstanceState);
         newsArticles = new ArrayList<>();
 
@@ -125,7 +126,7 @@ public class NewsActivity extends AppCompatActivity implements SettingsDialogFra
         recyclerViewNewsArticles.setLayoutManager(staggeredGridLayoutManager);
         recyclerViewNewsArticles.setItemAnimator(new SlideInUpAnimator());
 //        RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
-        SpacesItemDecoration spacesItemDecoration = new SpacesItemDecoration(16);
+        SpacesItemDecoration spacesItemDecoration = new SpacesItemDecoration(8);
         recyclerViewNewsArticles.addItemDecoration(spacesItemDecoration);
         endlessRecyclerViewScrollListener = new EndlessRecyclerViewScrollListener(staggeredGridLayoutManager) {
             @Override

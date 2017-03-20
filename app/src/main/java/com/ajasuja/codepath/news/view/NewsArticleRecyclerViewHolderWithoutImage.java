@@ -17,6 +17,7 @@ import static butterknife.ButterKnife.bind;
 public class NewsArticleRecyclerViewHolderWithoutImage extends RecyclerView.ViewHolder {
 
     @BindView(R.id.textViewHeadline) TextView textViewHeadline;
+    @BindView(R.id.textViewSnippet) TextView textViewSnippet;
 
     public NewsArticleRecyclerViewHolderWithoutImage(View itemView) {
         super(itemView);
@@ -29,5 +30,13 @@ public class NewsArticleRecyclerViewHolderWithoutImage extends RecyclerView.View
 
     public void setTextViewHeadline(TextView textViewHeadline) {
         this.textViewHeadline = textViewHeadline;
+    }
+
+    public TextView getTextViewSnippet() {
+        return textViewSnippet;
+    }
+
+    public void setTextViewSnippet(TextView textViewSnippet) {
+        this.textViewSnippet = textViewSnippet;
     }
 }

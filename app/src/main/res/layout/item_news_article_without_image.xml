@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@android:color/background_light">
@@ -8,9 +8,15 @@
         android:id="@+id/textViewHeadline"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TextView"
-        android:fontFamily="casual"
+        android:text="headline"
         android:textColor="@android:color/background_dark"
         android:textSize="12sp"
-        android:textStyle="normal|bold"/>
-</RelativeLayout>
+        android:textStyle="normal|bold" />
+
+    <TextView
+        android:id="@+id/textViewSnippet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="snippet"
+        android:textSize="10sp" />
+</LinearLayout>

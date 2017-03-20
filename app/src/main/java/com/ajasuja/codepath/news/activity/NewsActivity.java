@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
@@ -26,9 +27,15 @@ import com.ajasuja.codepath.news.decorate.ItemClickSupport;
 import com.ajasuja.codepath.news.decorate.SpacesItemDecoration;
 import com.ajasuja.codepath.news.fragment.SettingsDialogFragment;
 import com.ajasuja.codepath.news.listener.EndlessRecyclerViewScrollListener;
+import com.ajasuja.codepath.news.model.Meta;
 import com.ajasuja.codepath.news.model.NewsArticle;
+import com.ajasuja.codepath.news.model.NyTimesResponse;
 import com.ajasuja.codepath.news.model.Settings;
+import com.ajasuja.codepath.news.network.NyTimesApiEndpointInterface;
+import com.ajasuja.codepath.news.network.NyTimesResponseDeserializer;
 import com.ajasuja.codepath.news.util.NetworkUtil;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -42,6 +49,11 @@ import java.util.List;
 import butterknife.BindView;
 import cz.msebera.android.httpclient.Header;
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import static android.support.v7.widget.SearchView.OnQueryTextListener;
 import static butterknife.ButterKnife.bind;
@@ -118,7 +130,8 @@ public class NewsActivity extends AppCompatActivity implements SettingsDialogFra
         endlessRecyclerViewScrollListener = new EndlessRecyclerViewScrollListener(staggeredGridLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                fetchArticles(page);
+//                fetchArticles(page);
+                fetchArticlesUsingRetrofit(page);
             }
         };
         recyclerViewNewsArticles.addOnScrollListener(endlessRecyclerViewScrollListener);
@@ -149,10 +162,11 @@ public class NewsActivity extends AppCompatActivity implements SettingsDialogFra
         if (settings == null) {
             settings = Settings.getInstance();
         }
-//        if (query == null) {
-//            query = formatQuery("donald trump");
-//        }
-        fetchArticles(0);
+        if (query == null) {
+            query = formatQuery("donald trump");
+        }
+//        fetchArticles(0);
+        fetchArticlesUsingRetrofit(0);
     }
 
     @Override
@@ -165,7 +179,8 @@ public class NewsActivity extends AppCompatActivity implements SettingsDialogFra
             @Override
             public boolean onQueryTextSubmit(String queryString) {
                 query = formatQuery(queryString);
-                fetchArticles(0);
+//                fetchArticles(0);
+                fetchArticlesUsingRetrofit(0);
                 // workaround to avoid issues with some emulators and keyboard devices firing twice if a keyboard enter is used
                 // see https://code.google.com/p/android/issues/detail?id=24599
                 searchView.clearFocus();
@@ -256,14 +271,8 @@ public class NewsActivity extends AppCompatActivity implements SettingsDialogFra
 
     private String buildNyTimesUrl(int page, Settings settings) {
         StringBuilder urlBuilder = new StringBuilder();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(settings.getBeginDateInMillis());
-        String year = String.valueOf(calendar.get(Calendar.YEAR));
-        int monthInteger = calendar.get(Calendar.MONTH) + 1;
-        String month = (monthInteger > 9) ? String.valueOf(monthInteger) : String.valueOf("0" + monthInteger);
-        String day = (calendar.get(Calendar.DAY_OF_MONTH) >= 10) ? String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)) : String.valueOf("0" + calendar.get(Calendar.DAY_OF_MONTH));
-        String beginDate = year+month+day;//"20170112";
-        String sortOrder = settings.getSortOrder().getSortOrder().toLowerCase();
+        String beginDate = toBeginDate(settings);
+        String sortOrder = toSortOrderString(settings);
         String newsDeskValues = toNewsDeskValues(settings);
         String urlWithoutNewsDesk = String.format("https://api.nytimes.com/svc/search/v2/articlesearch.json?" +
                 "q=%s&page=%d&begin_date=%s&sort=%s&api-key=2ff5b653ccc749ed9bd0640dcec277da",
@@ -273,6 +282,22 @@ public class NewsActivity extends AppCompatActivity implements SettingsDialogFra
             urlBuilder.append(String.format("&fq=news_desk:(%s)", toNewsDeskValues(settings)));
         }
         return urlBuilder.toString();
+    }
+
+    @NonNull
+    private String toSortOrderString(Settings settings) {
+        return settings.getSortOrder().getSortOrder().toLowerCase();
+    }
+
+    @NonNull
+    private String toBeginDate(Settings settings) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(settings.getBeginDateInMillis());
+        String year = String.valueOf(calendar.get(Calendar.YEAR));
+        int monthInteger = calendar.get(Calendar.MONTH) + 1;
+        String month = (monthInteger > 9) ? String.valueOf(monthInteger) : String.valueOf("0" + monthInteger);
+        String day = (calendar.get(Calendar.DAY_OF_MONTH) >= 10) ? String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)) : String.valueOf("0" + calendar.get(Calendar.DAY_OF_MONTH));
+        return year+month+day;
     }
 
     private String toNewsDeskValues(Settings settings) {
@@ -295,7 +320,58 @@ public class NewsActivity extends AppCompatActivity implements SettingsDialogFra
     @Override
     public void onSettingsSave(Settings settings) {
         this.settings = settings;
-        fetchArticles(0);
+//        fetchArticles(0);
+        fetchArticlesUsingRetrofit(0);
         Log.d("DEBUG", "Back to settings from SettingsDialogFragment with settings : " + settings);
+    }
+
+    private void fetchArticlesUsingRetrofit(final int pageNumber) {
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(NyTimesResponse.class, new NyTimesResponseDeserializer())
+                .create();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://api.nytimes.com")
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build();
+        NyTimesApiEndpointInterface nyTimesSearchService = retrofit.create(NyTimesApiEndpointInterface.class);
+        Call<NyTimesResponse> call = nyTimesSearchService.searchArticles(pageNumber,
+                formatQuery(query), toBeginDate(settings),
+                toSortOrderString(settings),
+                "2ff5b653ccc749ed9bd0640dcec277da");
+        call.enqueue(new Callback<NyTimesResponse>() {
+            @Override
+            public void onResponse(Call<NyTimesResponse> call, Response<NyTimesResponse> response) {
+                int code = response.code();
+                if (code == 200 || code == 201) {
+                    NyTimesResponse nyTimesResponse = response.body();
+                    Meta meta = nyTimesResponse.getMeta();
+                    if (pageNumber == 0) {
+                        newsArticles.clear();
+                        endlessRecyclerViewScrollListener.resetState();
+                        newsArticlesRecyclerViewHeterogenousAdapter.notifyDataSetChanged();
+//                        newsArcticlesRecyclerViewAdapter.notifyDataSetChanged();
+                    }
+                    newsArticles.addAll(nyTimesResponse.getArticles());
+                    newsArticlesRecyclerViewHeterogenousAdapter.notifyDataSetChanged();
+                } else if (code == 429) {
+                    try {
+//                        Snackbar.make(parentView, "API Rate Limiting", Snackbar.LENGTH_SHORT).show();
+                        Thread.sleep(1000);
+                        fetchArticlesUsingRetrofit(pageNumber);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    Log.d("error", "retrofit status code ... " + code);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<NyTimesResponse> call, Throwable t) {
+                Log.d("error", "retrofit call to nytimes failed ..." + t.getMessage());
+//                t.printStackTrace();
+            }
+        });
+
     }
 }

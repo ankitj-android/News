@@ -1,5 +1,9 @@
 package com.ajasuja.codepath.news.model;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.annotations.SerializedName;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,6 +18,7 @@ import java.util.List;
 @Parcel
 public class NewsArticle {
 
+    @SerializedName("web_url")
     String webUrl;
     String thumbNailImageUrl;
     String headline;
@@ -28,6 +33,15 @@ public class NewsArticle {
         JSONArray multimediaObjects = jsonObject.getJSONArray("multimedia");
         if (multimediaObjects.length() > 0) {
             this.thumbNailImageUrl = multimediaObjects.getJSONObject(0).getString("url");
+        }
+    }
+
+    public NewsArticle(JsonObject jsonObject) {
+        webUrl = jsonObject.get("web_url").getAsString();
+        this.headline = jsonObject.get("headline").getAsJsonObject().get("main").getAsString();
+        JsonArray multimediaObjects = jsonObject.get("multimedia").getAsJsonArray();
+        if (multimediaObjects.size() > 0) {
+            this.thumbNailImageUrl = multimediaObjects.get(0).getAsJsonObject().get("url").getAsString();
         }
     }
 
@@ -57,6 +71,13 @@ public class NewsArticle {
         return newsArticles;
     }
 
+    public static List<NewsArticle> fromJsonArray(JsonArray articlesJsonArray) {
+        List<NewsArticle> newsArticles = new ArrayList<>();
+        for (int i=0; i< articlesJsonArray.size(); i++) {
+            newsArticles.add(new NewsArticle(articlesJsonArray.get(i).getAsJsonObject()));
+        }
+        return newsArticles;
+    }
     @Override
     public String toString() {
         return "NewsArticle{" +
